@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Params, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Comment } from '../shared/comment'
@@ -24,6 +24,7 @@ export class DishdetailComponent implements OnInit {
   comment: Comment;
   prev: Number;
   next: Number;
+  errMess: string;
 
   formErrors = {
     'author': '',
@@ -43,14 +44,16 @@ export class DishdetailComponent implements OnInit {
   constructor(private dishService: DishService,
     private route: ActivatedRoute,
     private location: Location,
-    private fb:FormBuilder) {
+    private fb:FormBuilder,
+    @Inject('BaseURL') private BaseURL) {
        this.createForm(); }
 
   ngOnInit() {
     this.dishService.getDishIds().subscribe((dishIds) => this.dishIds = dishIds);
     this.route.params
      .switchMap(( params: Params )=>this.dishService.getDish(+params['id']))
-     .subscribe(dish => {this.dish = dish; this.setPrevNext(dish.id)});
+     .subscribe(dish => {this.dish = dish; this.setPrevNext(dish.id)},
+           errmess => {this.errMess = errmess});
   }
   createForm(){
     this.commentform = this.fb.group({
