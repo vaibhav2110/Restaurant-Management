@@ -59,7 +59,7 @@
           <h2>Corporate Leadership</h2>
           <md-list fxFlex *ngIf="leader" [@expand]>
          <md-list-item *ngFor="let leaders of leader">
-             <img md-list-avatar src={{leaders.image}} alt={{leaders.name}}>
+             <img md-list-avatar src="{{BaseURL+leaders.image}}" alt={{leaders.name}}>
              <h1 md-line>{{leaders.name}}</h1>
              <p md-line><span>{{leaders.designation}}</span></p>
              <p md-line>

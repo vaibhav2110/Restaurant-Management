@@ -1,15 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Feedback, ContactType } from '../shared/feedback';
+import { FeedbackService } from '../services/feedback.service';
+import { visibility,expand, flyInOut } from '../animations/app.animations';
+
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss']
+  styleUrls: ['./contact.component.scss'],
+  animations: [
+    visibility(),
+    expand(),
+    flyInOut()
+  ]
 })
 export class ContactComponent implements OnInit {
 
 	feedbackForm: FormGroup;
 	feedback: Feedback;
+  feedbackCopy: Feedback;
+  feedbackCopy2= true;
+  show2=false;
+  show: boolean;
 	contactType = ContactType;
   formErrors = {
     'firstname': '',
@@ -39,11 +51,14 @@ export class ContactComponent implements OnInit {
     },
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,
+    private feedbackService: FeedbackService) {
      this.createForm();
    }
 
   ngOnInit() {
+        this.show = false;
+
   }
     createForm() {
     this.feedbackForm = this.fb.group({
@@ -58,10 +73,23 @@ export class ContactComponent implements OnInit {
     this.feedbackForm.valueChanges
         .subscribe(data => this.onValueChanged(data));
     this.onValueChanged();
+    this.feedbackCopy = {
+      firstname: '',
+      lastname: '',
+      telnum: 0,
+      email: '',
+      agree: false,
+      contacttype: '',
+      message: ''
+    };
   }
 
   onSubmit() {
-    this.feedback = this.feedbackForm.value;
+  this.feedbackCopy2 = false;
+  this.show = true;  
+  this.feedback = this.feedbackForm.value;
+  this.feedbackService.submitForm(this.feedback).subscribe(form => {this.feedbackCopy = form; this.feedbackCopy2 = true; this.show2 = true;
+      setTimeout(function(){this.show=false; this.show2 = false;}.bind(this),5000);});
     console.log(this.feedback);
     this.feedbackForm.reset({
       firstname: '',

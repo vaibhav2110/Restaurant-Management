@@ -35,7 +35,7 @@
           </div>
         </div>
       </div>
-            <div fxFlex fxFlexOffset="20px" class="form-size">
+        <div fxFlex fxFlexOffset="20px" class="form-size" *ngIf="!show" [@expand]>
         <h3>Send us your Feedback</h3>
         <p>{{ feedbackForm.value | json }} {{ feedbackForm.status | json }}</p>
 
@@ -95,5 +95,26 @@
           </p>
           <button type="submit" md-button class="background-primary text-floral-white" [disabled]="feedbackForm.invalid">Submit</button>
         </form>
+       
+
+
       </div>
+       <div *ngIf="!feedbackCopy2" fxFlex [@expand]>
+          <h3>Submitting</h3>
+
+          <md-spinner></md-spinner>
+        </div>
+      <div fxFlex *ngIf="show2" [@expand]>
+        <h1>Your Submission</h1>
+        <p>First Name: <span>{{feedbackCopy.firstname}}</span></p>
+        <p>Last Name: <span>{{feedbackCopy.lastname}}</span></p>
+        <p>Telephone: <span>{{feedbackCopy.telnum}}</span></p>
+        <p>Email: <span>{{feedbackCopy.email}}</span></p>
+        <p>Agree?: <span>{{feedbackCopy.agree}}</span></p>
+        <p>ContactType?: <span>{{feedbackCopy.contacttype}}</span></p>
+        <p>Message: <span>{{feedbackCopy.message}}</span></p>
+
+
+      </div>
+      
 </div>
