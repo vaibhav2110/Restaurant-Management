@@ -10,21 +10,37 @@ import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
 import 'rxjs/add/operator/switchMap';
 
+import { visibility,expand, flyInOut } from '../animations/app.animations';
+
+
+
 
 @Component({
   selector: 'app-dishdetail',
   templateUrl: './dishdetail.component.html',
-  styleUrls: ['./dishdetail.component.scss']
+  styleUrls: ['./dishdetail.component.scss'],
+  host: {
+  '[@flyInOut]': 'true',
+  'style': 'display: block;'
+  },
+  animations: [
+    visibility(),
+    expand(),
+    flyInOut()
+  ]
 })
 export class DishdetailComponent implements OnInit {
 
   dish: Dish;
+  dishCopy= null;
   dishIds: Number[];
   commentform: FormGroup;
   comment: Comment;
   prev: Number;
   next: Number;
   errMess: string;
+
+  visibility = 'shown';
 
   formErrors = {
     'author': '',
@@ -50,10 +66,10 @@ export class DishdetailComponent implements OnInit {
 
   ngOnInit() {
     this.dishService.getDishIds().subscribe((dishIds) => this.dishIds = dishIds);
-    this.route.params
-     .switchMap(( params: Params )=>this.dishService.getDish(+params['id']))
-     .subscribe(dish => {this.dish = dish; this.setPrevNext(dish.id)},
-           errmess => {this.errMess = errmess});
+   this.route.params
+      .switchMap((params: Params) => { this.visibility = 'hidden'; return this.dishService.getDish(+params['id']); })
+      .subscribe(dish => { this.dish = dish; this.dishCopy = dish; this.setPrevNext(dish.id); this.visibility = 'shown'; },
+          errMess => { this.dish = null; this.errMess = <any>errMess; });
   }
   createForm(){
     this.commentform = this.fb.group({
@@ -79,7 +95,8 @@ export class DishdetailComponent implements OnInit {
     let d = new Date();
     let n = d.toISOString();
     this.comment.date = n;
-    this.dish.comments.push(this.comment);
+    this.dishCopy.comments.push(this.comment);
+    this.dishCopy.save().subscribe(dish => this.dish = dish);
     console.log(this.comment);
     this.commentform.reset({
       rating: 1,
